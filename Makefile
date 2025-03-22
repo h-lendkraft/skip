@@ -17,6 +17,14 @@ login:
 	@echo "Testing login functionality..."
 	curl -s -X GET $(API_BASE_URL)/speed/login 
 
+search-namedob:
+	@echo "Testing name and DOB search..."
+	@read -p "Enter name: " name; \
+	read -p "Enter DOB (DD-MM-YYYY): " dob; \
+	curl -s -X POST $(API_BASE_URL)/speed/search/name-dob \
+		-H "Content-Type: application/json" \
+		-d "[{\"name\":\"$$name\",\"dob\":\"$$dob\"}]" | jq
+
 search-mobile:
 	@if [ -z "$(NUMBERS)" ]; then \
 		echo "Error: Please provide mobile numbers. Usage: make search NUMBERS=\"1111111111\" or make search NUMBERS=\"111111111 2222222222\""; \

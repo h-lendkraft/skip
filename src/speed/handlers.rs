@@ -1,4 +1,6 @@
-use crate::speed::{MultipleAadharSearchRequest, MultipleMobileSearchRequest};
+use crate::speed::{
+    MultipleAadharSearchRequest, MultipleMobileSearchRequest, MultipleNameDobSearchRequest,
+};
 use axum::{
     extract::{self, State},
     response::Json,
@@ -20,7 +22,7 @@ pub async fn search_mobile(
     extract::Json(numbers): extract::Json<MultipleMobileSearchRequest>,
 ) -> SpeedResult<Json<Vec<SpeedUser>>> {
     numbers.validate()?;
-    let persons = state.search_multiple(numbers).await?;
+    let persons = state.search_multiple_number(numbers).await?;
     Ok(Json(persons))
 }
 pub async fn search_aadhar(
@@ -31,6 +33,14 @@ pub async fn search_aadhar(
     let persons = state.search_multiple_aadhar(numbers).await?;
     Ok(Json(persons))
 }
+pub async fn search_name_dob(
+    State(state): State<SpeedState>,
+    extract::Json(namedobs): extract::Json<MultipleNameDobSearchRequest>,
+) -> SpeedResult<Json<Vec<SpeedUser>>> {
+    namedobs.validate()?;
+    let persons = state.search_multiple_name_dob(namedobs).await?;
+    Ok(Json(persons))
+}
 
 use axum::routing::{get, post};
 pub fn routes(state: SpeedState) -> axum::Router {
@@ -38,5 +48,6 @@ pub fn routes(state: SpeedState) -> axum::Router {
         .route("/speed/login", get(login))
         .route("/speed/search/mobile", post(search_mobile))
         .route("/speed/search/aadhar", post(search_aadhar))
+        .route("/speed/search/name-dob", post(search_name_dob))
         .with_state(state)
 }
