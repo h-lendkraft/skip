@@ -66,6 +66,49 @@ impl Validate for MultipleMobileSearchRequest {
         Ok(())
     }
 }
+#[derive(Debug, Deserialize, Clone)]
+pub struct Aadhar(pub String);
+
+impl Validate for Aadhar {
+    fn validate(&self) -> Result<(), validator::ValidationErrors> {
+        if self.0.len() != 12 {
+            let mut errors = validator::ValidationErrors::new();
+            errors.add("aadhar", validator::ValidationError::new("length"));
+            return Err(errors);
+        }
+        Ok(())
+    }
+}
+
+impl From<String> for Aadhar {
+    fn from(s: String) -> Self {
+        Aadhar(s)
+    }
+}
+
+impl AsRef<str> for Aadhar {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+
+#[derive(Debug, Deserialize)]
+pub struct MultipleAadharSearchRequest(pub Vec<Aadhar>);
+
+impl Validate for MultipleAadharSearchRequest {
+    fn validate(&self) -> Result<(), validator::ValidationErrors> {
+        if self.0.is_empty() {
+            let mut errors = validator::ValidationErrors::new();
+            errors.add("aadhar_numbers", validator::ValidationError::new("length"));
+            return Err(errors);
+        }
+        // Validate each Aadhar number
+        for aadhar in &self.0 {
+            aadhar.validate()?
+        }
+        Ok(())
+    }
+}
 // impl Validate for Mobile {
 //     fn validate(&self) -> Result<(), validator::ValidationErrors> {
 //         if self.0.len() != 10 {

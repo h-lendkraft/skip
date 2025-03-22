@@ -19,17 +19,29 @@ login:
 
 search-mobile:
 	@if [ -z "$(NUMBERS)" ]; then \
-		echo "Error: Please provide mobile numbers. Usage: make search NUMBERS=\"8778652611\" or make search NUMBERS=\"8778652611 9876543210\""; \
+		echo "Error: Please provide mobile numbers. Usage: make search NUMBERS=\"1111111111\" or make search NUMBERS=\"111111111 2222222222\""; \
 		exit 1; \
 	fi; \
 	for number in $(NUMBERS); do \
 		echo "Searching for $$number..."; \
-		curl -s -X POST $(API_BASE_URL)/speed/search \
+		curl -s -X POST $(API_BASE_URL)/speed/search/mobile \
 			-H "Content-Type: application/json" \
 			-d "[\"$$number\"]" | jq; \
 		echo "\n"; \
 	done
 
+search-aadhar:
+	@if [ -z "$(AADHARS)" ]; then \
+		echo "Error: Please provide aadhar. Usage: make search AADHARS=\"111111111111\" or make search AADHARS=\"11111111111 222222222222\""; \
+		exit 1; \
+	fi; \
+	for number in $(AADHARS); do \
+		echo "Searching for $$number..."; \
+		curl -s -X POST $(API_BASE_URL)/speed/search/aadhar \
+			-H "Content-Type: application/json" \
+			-d "[\"$$number\"]" | jq; \
+		echo "\n"; \
+	done
 # Build and run commands
 build:
 	@echo "Building the application..."
