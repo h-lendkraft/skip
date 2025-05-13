@@ -44,8 +44,12 @@ impl SpeedState {
         form.insert("__RequestVerificationToken", &search_token);
 
         // Perform search
-        let search_url = "https://search.findcustomersdata.online/Home/Search";
-        let response = self.client.post(search_url).form(&form).send().await?;
+        let response = self
+            .client
+            .post(self.base_url.clone() + &self.search_append)
+            .form(&form)
+            .send()
+            .await?;
 
         let response_text = response.text().await?;
 

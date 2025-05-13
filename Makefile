@@ -2,10 +2,11 @@
 
 # Configuration variables - edit these as needed
 PORT ?= 3000
-SPEED_USER ?= boneykumar@123
-SPEED_PASSWD ?= @boney123!\&
-SPEED_BASE_URL ?= https://search.findcustomersdata.online
+SPEED_USER ?= BACKESHMOORHTY
+SPEED_PASSWD ?= backeshmoorhty123
+SPEED_BASE_URL ?= https://visit.checkmycontent.site
 API_BASE_URL ?= http://localhost:$(PORT)
+# API_BASE_URL ?=https://135f-2409-40f4-3088-4301-7da3-70f4-e91-9eb9.ngrok-free.app
 
 #
 # Test commands - step by step testing

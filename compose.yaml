@@ -1,0 +1,14 @@
+services:
+  skip:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - ./prod.env
+    environment:
+      - PORT=3000
+      - SPEED_BASE_URL=https://lookup.checkmycontent.site
+      - SPEED_SEARCH_APPEND=/Home/Search
+      - RUST_LOG=info,tower_http=info
+    ports:
+      - "3000:3000" 

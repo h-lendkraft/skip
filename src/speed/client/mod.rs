@@ -76,10 +76,11 @@ impl SpeedState {
         let mut form = HashMap::new();
         form.insert("Username", self.user.as_str());
         form.insert("Password", self.passwd.as_str());
+        form.insert("ipaddress", "");
         form.insert("__RequestVerificationToken", &token);
 
         // Perform login
-        let _ = self.client.post(&self.base_url).form(&form).send().await?;
+        let tmp = self.client.post(&self.base_url).form(&form).send().await?;
 
         // Try accessing the home page directly
         let home_url = format!("{}/Home/Index", self.base_url);
