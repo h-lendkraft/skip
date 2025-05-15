@@ -18,6 +18,8 @@ pub enum SpeedError {
     Selector(#[from] scraper::error::SelectorErrorKind<'static>),
     #[error("Validation failed: {0}")]
     Validation(#[from] validator::ValidationErrors),
+    #[error("Invalid region code: {0}")]
+    InvalidRegion(String),
 }
 impl IntoResponse for SpeedError {
     fn into_response(self) -> Response {
@@ -29,10 +31,6 @@ impl IntoResponse for SpeedError {
             Self::Authentication(_) => {
                 tracing::error!(error = %self, kind = ?self, "Authentication error occurred");
                 StatusCode::UNAUTHORIZED
-            }
-            Self::CsrfToken(_) => {
-                tracing::error!(error = %self, kind = ?self, "CSRF token error occurred");
-                StatusCode::BAD_REQUEST
             }
             _ => {
                 tracing::error!(error = %self, kind = ?self, "Internal server error occurred");

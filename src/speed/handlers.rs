@@ -6,7 +6,7 @@ use axum::{
     response::Json,
 };
 use serde_json::{json, Value};
-use validator::Validate;
+use validator::{Validate, ValidateArgs};
 
 use crate::error::SpeedResult;
 use crate::speed::{SpeedState, SpeedUser};
@@ -17,11 +17,13 @@ pub async fn login(State(state): State<SpeedState>) -> SpeedResult<Json<Value>> 
     Ok(Json(json!({ "status": "success" })))
 }
 
+#[axum::debug_handler]
 pub async fn search_mobile(
     State(state): State<SpeedState>,
     extract::Json(numbers): extract::Json<MultipleMobileSearchRequest>,
 ) -> SpeedResult<Json<Vec<SpeedUser>>> {
-    numbers.validate()?;
+    let valid_keys: Vec<u8> = state.region_map.keys().copied().collect();
+    numbers.validate_with_args(&valid_keys)?;
     let persons = state.search_multiple_number(numbers).await?;
     Ok(Json(persons))
 }

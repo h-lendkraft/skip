@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use validator::Validate;
+use validator::{Validate, ValidateArgs};
 
 mod mobile;
 pub use mobile::*;
@@ -32,15 +32,13 @@ pub struct SpeedUser {
     #[serde(default)]
     pub identity: Option<String>,
 }
-// impl Validate for Mobile {
-//     fn validate(&self) -> Result<(), validator::ValidationErrors> {
-//         if self.0.len() != 10 {
-//             let mut errors = validator::ValidationErrors::new();
-//             let mut error = validator::ValidationError::new("length");
-//             error.message = Some(std::borrow::Cow::from("Mobile number must be exactly 10 digits"));
-//             errors.add("mobile", error);
-//             return Err(errors);
-//         }
-//         Ok(())
-//     }
-// }
+#[derive(Debug, Clone)]
+pub struct SpeedSearch {
+    pub page: &'static str,
+    pub form: &'static str,
+}
+impl SpeedSearch {
+    pub fn new(page: &'static str, form: &'static str) -> Self {
+        Self { page, form }
+    }
+}

@@ -9,32 +9,28 @@ impl SpeedState {
         self.ensure_logged_in().await?;
 
         let mut all_users = Vec::new();
-
+        let state_details = self.get_region_path(request.state)?;
         // Process each mobile number
-        for mobile in request.0 {
+        for mobile in request.numbers {
             // Search for this individual mobile number
-            match self.search_number(mobile).await {
-                Ok(users) => {
-                    // Add all users found for this mobile
-                    all_users.extend(users);
-                }
-                Err(e) => {
-                    // Log error but continue with other numbers
-                    tracing::warn!("Error searching for mobile number: {}", e);
-                }
-            }
+            let users = self.search_number(state_details.clone(), mobile).await?;
+            all_users.extend(users);
         }
 
         Ok(all_users)
     }
 
-    async fn search_number(&self, mobile: Mobile) -> SpeedResult<Vec<SpeedUser>> {
+    async fn search_number(
+        &self,
+        state_details: std::sync::Arc<SpeedSearch>,
+        mobile: Mobile,
+    ) -> SpeedResult<Vec<SpeedUser>> {
         // Ensure we're logged in before attempting search
         self.ensure_logged_in().await?;
 
         // Get the search page to extract new CSRF token
-        let home_url = format!("{}/Home/Index", self.base_url);
-        let search_page = self.client.get(home_url).send().await?.text().await?;
+        let state_url = format!("{}/{}", self.base_url, state_details.page);
+        let search_page = self.client.get(&state_url).send().await?.text().await?;
 
         // Extract token for search form
         let search_token = extract_csrf_token(&search_page)?;
@@ -48,7 +44,7 @@ impl SpeedState {
         // Perform search
         let response = self
             .client
-            .post(self.base_url.clone() + &self.search_append)
+            .post(self.base_url.clone() + "/" + state_details.form)
             .form(&form)
             .send()
             .await?;

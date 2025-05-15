@@ -1,0 +1,42 @@
+# This is a configuration file for the bacon tool
+#
+# Complete help on configuration: https://dystroy.org/bacon/config/
+# 
+# You may check the current default at
+#   https://github.com/Canop/bacon/blob/main/defaults/default-bacon.toml
+
+default_job = "check"
+env.CARGO_TERM_COLOR = "always"
+
+[jobs.check]
+command = ["cargo", "clippy"]
+# env = { DATABASE_URL = "sqlite:data/orchestration.db", RUST_LOG = "debug" }
+need_stdout = false
+
+[jobs.test]
+command = ["cargo", "nextest", "run", "", "--nocapture", "--no-fail-fast"]
+# env = { DATABASE_URL = "sqlite:data/orchestration.db", RUST_LOG = "debug" }
+
+[jobs.serve]
+command = ["cargo", "run", "--color", "always"]
+env = { PORT = "3000", SPEED_USER = "BACKESHMOORHTY", SPEED_PASSWD = "backeshmoorhty123", SPEED_BASE_URL = "https://lookup.checkmycontent.site", RUST_LOG = "info,tower_http=info" }
+need_stdout = true
+allow_warnings = true
+background = false
+on_change_strategy = "kill_then_restart"
+kill = ["pkill", "-TERM", "server"]
+default_watch = false
+watch = ["./src/main.rs"]
+
+[notifications]
+enabled = true
+title = "Bacon"
+
+[keybindings]
+q = "quit"
+w = "job:check"
+s = "job:serve"
+
+[appearance]
+colors = true
+background_color = true

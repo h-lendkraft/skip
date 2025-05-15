@@ -28,14 +28,14 @@ search-namedob:
 
 search-mobile:
 	@if [ -z "$(NUMBERS)" ]; then \
-		echo "Error: Please provide mobile numbers. Usage: make search NUMBERS=\"1111111111\" or make search NUMBERS=\"111111111 2222222222\""; \
+		echo "Error: Please provide mobile numbers. Usage: make search NUMBERS=\"1111111111\" STATE=22 or make search NUMBERS=\"111111111 2222222222\"" STATE=11; \
 		exit 1; \
 	fi; \
 	for number in $(NUMBERS); do \
 		echo "Searching for $$number..."; \
 		curl -s -X POST $(API_BASE_URL)/speed/search/mobile \
 			-H "Content-Type: application/json" \
-			-d "[\"$$number\"]" | jq; \
+			-d "{\"numbers\":[\"$$number\"],\"state\":$(STATE)}" | jq; \
 		echo "\n"; \
 	done
 

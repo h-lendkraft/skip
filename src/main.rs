@@ -42,15 +42,8 @@ async fn main() -> anyhow::Result<()> {
     let speed_user = std::env::var("SPEED_USER").unwrap();
     let speed_pass = std::env::var("SPEED_PASSWD").unwrap();
     let speed_url = std::env::var("SPEED_BASE_URL").unwrap();
-    let speed_search_append = std::env::var("SPEED_SEARCH_APPEND").unwrap();
 
-    let speed_state = SpeedState::new(
-        client,
-        speed_url,
-        speed_search_append,
-        speed_pass,
-        speed_user,
-    );
+    let speed_state = SpeedState::new(client, speed_url, speed_pass, speed_user);
     // region end:   --- SPEED
 
     let middleware = ServiceBuilder::new().layer(TraceLayer::new_for_http());

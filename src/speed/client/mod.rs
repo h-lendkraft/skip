@@ -2,7 +2,7 @@ use crate::error::{SpeedError, SpeedResult};
 use crate::speed::Mobile;
 use crate::speed::{
     Aadhar, MultipleAadharSearchRequest, MultipleMobileSearchRequest, MultipleNameDobSearchRequest,
-    NameDobSearchRequest, SpeedUser,
+    NameDobSearchRequest, SpeedSearch, SpeedUser,
 };
 use crate::SpeedState;
 use scraper::{Html, Selector};
@@ -80,7 +80,7 @@ impl SpeedState {
         form.insert("__RequestVerificationToken", &token);
 
         // Perform login
-        let tmp = self.client.post(&self.base_url).form(&form).send().await?;
+        self.client.post(&self.base_url).form(&form).send().await?;
 
         // Try accessing the home page directly
         let home_url = format!("{}/Home/Index", self.base_url);
