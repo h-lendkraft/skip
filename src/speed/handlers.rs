@@ -39,7 +39,8 @@ pub async fn search_name_dob(
     State(state): State<SpeedState>,
     extract::Json(namedobs): extract::Json<MultipleNameDobSearchRequest>,
 ) -> SpeedResult<Json<Vec<SpeedUser>>> {
-    namedobs.validate()?;
+    let valid_keys: Vec<u8> = state.region_map.keys().copied().collect();
+    namedobs.validate_with_args(&valid_keys)?;
     let persons = state.search_multiple_name_dob(namedobs).await?;
     Ok(Json(persons))
 }

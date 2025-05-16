@@ -6,6 +6,7 @@ SPEED_USER ?= BACKESHMOORHTY
 SPEED_PASSWD ?= backeshmoorhty123
 SPEED_BASE_URL ?= https://visit.checkmycontent.site
 API_BASE_URL ?= http://localhost:$(PORT)
+# API_BASE_URL ?= https://apps.lendkraft.ai
 # API_BASE_URL ?=https://135f-2409-40f4-3088-4301-7da3-70f4-e91-9eb9.ngrok-free.app
 
 #
@@ -16,15 +17,18 @@ health:
 
 login:
 	@echo "Testing login functionality..."
-	curl -s -X GET $(API_BASE_URL)/speed/login 
+	curl -X GET $(API_BASE_URL)/speed/login 
 
 search-namedob:
 	@echo "Testing name and DOB search..."
-	@read -p "Enter name: " name; \
-	read -p "Enter DOB (DD-MM-YYYY): " dob; \
+	@if [ -z "$(NAME)" ] || [ -z "$(DOB)" ] || [ -z "$(STATE)" ]; then \
+		echo "Error: Please provide NAME, DOB, and STATE. Usage: make search-namedob NAME=\"John Doe\" DOB=\"01-01-1990\" STATE=33"; \
+		exit 1; \
+	fi; \
+	echo "Searching for $$NAME born on $$DOB in state $$STATE..."; \
 	curl -s -X POST $(API_BASE_URL)/speed/search/name-dob \
 		-H "Content-Type: application/json" \
-		-d "[{\"name\":\"$$name\",\"dob\":\"$$dob\"}]" | jq
+		-d "{\"pairs\":[{\"name\":\"$$NAME\",\"dob\":\"$$DOB\"}],\"state\":$(STATE)}" | jq
 
 search-mobile:
 	@if [ -z "$(NUMBERS)" ]; then \

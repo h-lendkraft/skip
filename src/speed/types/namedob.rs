@@ -22,7 +22,7 @@ impl Dob {
         let s = self.0.clone();
 
         // Remove all separators first
-        let s = s.replace('.', "-").replace('/', "-");
+        let s = s.replace(['.', '/'], "-");
 
         // Split by separator
         let parts: Vec<&str> = s.split('-').collect();
@@ -133,21 +133,39 @@ impl Validate for NameDobSearchRequest {
         Ok(())
     }
 }
-// Add this to your src/speed/types.rs file
-
 #[derive(Debug, Deserialize)]
-pub struct MultipleNameDobSearchRequest(pub Vec<NameDobSearchRequest>);
+pub struct MultipleNameDobSearchRequest {
+    pub pairs: Vec<NameDobSearchRequest>,
+    pub state: u8,
+}
 
-impl Validate for MultipleNameDobSearchRequest {
-    fn validate(&self) -> Result<(), validator::ValidationErrors> {
-        if self.0.is_empty() {
-            let mut errors = validator::ValidationErrors::new();
-            errors.add("name_dob_pairs", validator::ValidationError::new("empty"));
+impl<'a> ValidateArgs<'a> for MultipleNameDobSearchRequest {
+    type Args = &'a [u8];
+    fn validate_with_args(
+        &self,
+        valid_codes: Self::Args,
+    ) -> Result<(), validator::ValidationErrors> {
+        // Validate state code
+        let mut errors = validator::ValidationErrors::new();
+        if !valid_codes.contains(&self.state) {
+            let mut error = validator::ValidationError::new("invalid_state");
+            error.message = Some(std::borrow::Cow::from(format!(
+                "Invalid state code: {}",
+                self.state
+            )));
+            errors.add("state_code", error);
+            return Err(errors);
+        }
+
+        if self.pairs.is_empty() {
+            let mut error = validator::ValidationError::new("empty");
+            error.message = Some(std::borrow::Cow::from("No name-dob pairs provided"));
+            errors.add("name_dob_pairs", error);
             return Err(errors);
         }
 
         // Validate each name-dob pair
-        for pair in &self.0 {
+        for pair in &self.pairs {
             pair.validate()?;
         }
 
