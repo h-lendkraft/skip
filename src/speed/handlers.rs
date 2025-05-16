@@ -6,7 +6,7 @@ use axum::{
     response::Json,
 };
 use serde_json::{json, Value};
-use validator::{Validate, ValidateArgs};
+use validator::ValidateArgs;
 
 use crate::error::SpeedResult;
 use crate::speed::{SpeedState, SpeedUser};
@@ -29,10 +29,11 @@ pub async fn search_mobile(
 }
 pub async fn search_aadhar(
     State(state): State<SpeedState>,
-    extract::Json(numbers): extract::Json<MultipleAadharSearchRequest>,
+    extract::Json(aadhars): extract::Json<MultipleAadharSearchRequest>,
 ) -> SpeedResult<Json<Vec<SpeedUser>>> {
-    numbers.validate()?;
-    let persons = state.search_multiple_aadhar(numbers).await?;
+    let valid_keys: Vec<u8> = state.region_map.keys().copied().collect();
+    aadhars.validate_with_args(&valid_keys)?;
+    let persons = state.search_multiple_aadhar(aadhars).await?;
     Ok(Json(persons))
 }
 pub async fn search_name_dob(
