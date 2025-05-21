@@ -18,14 +18,32 @@ impl SpeedState {
     pub fn new(client: reqwest::Client, base_url: String, passwd: String, user: String) -> Self {
         //State GST codes
         let mut region_map = HashMap::new();
-        region_map.insert(33, Arc::new(SpeedSearch::new("Home/Index", "Home/Search"))); // TN
         region_map.insert(
-            29,
-            Arc::new(SpeedSearch::new("HYD/HYDSearch", "HYD/Search")),
-        ); // AP
+            33,
+            Arc::new(SpeedSearch::new(
+                "Home/Index",
+                "Home/Search",
+                Some("ChnMobileno"),
+                Some("ChnDOB"),
+            )),
+        ); // TN
         region_map.insert(
             37,
-            Arc::new(SpeedSearch::new("BNG/BNGSearch", "BNG/Search")),
+            Arc::new(SpeedSearch::new(
+                "HYD/Index",
+                "HYD/HYDSearch",
+                Some("mobile"),
+                None,
+            )),
+        ); // AP
+        region_map.insert(
+            29,
+            Arc::new(SpeedSearch::new(
+                "BNG/Index",
+                "BNG/BNGSearch",
+                Some("mobile"),
+                Some("namenaddob"),
+            )),
         ); // KA
         Self {
             client,

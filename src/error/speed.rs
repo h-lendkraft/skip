@@ -20,11 +20,13 @@ pub enum SpeedError {
     Validation(#[from] validator::ValidationErrors),
     #[error("Invalid region code: {0}")]
     InvalidRegion(String),
+    #[error("Unsupported operation: {0}")]
+    UnsupportedOperation(String),
 }
 impl IntoResponse for SpeedError {
     fn into_response(self) -> Response {
         let status = match &self {
-            Self::Validation(_) => {
+            Self::Validation(_) | Self::UnsupportedOperation(_) => {
                 tracing::info!(error = %self, kind = ?self, "Client error occurred");
                 StatusCode::BAD_REQUEST
             }

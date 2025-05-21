@@ -4,6 +4,14 @@ impl SpeedState {
         &self,
         request: MultipleNameDobSearchRequest,
     ) -> SpeedResult<Vec<SpeedUser>> {
+        let state_details = self.get_region_path(request.state)?;
+        // Check if mobile search is supported for this state
+        if state_details.namedob.is_none() {
+            return Err(SpeedError::UnsupportedOperation(format!(
+                "Name DOB search is not supported for state code: {}",
+                request.state
+            )));
+        }
         // Ensure we're logged in before attempting search
         self.ensure_logged_in().await?;
 
@@ -24,6 +32,11 @@ impl SpeedState {
         state_details: std::sync::Arc<SpeedSearch>,
         name_dob: NameDobSearchRequest,
     ) -> SpeedResult<Vec<SpeedUser>> {
+        let search_option = state_details.namedob.ok_or_else(|| {
+            SpeedError::UnsupportedOperation(
+                "Mobile search option not configured for this state".to_string(),
+            )
+        })?;
         // Ensure we're logged in before attempting search
         self.ensure_logged_in().await?;
 
@@ -36,7 +49,7 @@ impl SpeedState {
 
         // Build search form data
         let mut form = std::collections::HashMap::new();
-        form.insert("searchOption", "ChnDOB");
+        form.insert("searchOption", search_option);
         form.insert("cnamedob", name_dob.name.0.as_str());
         let dob_normalized = name_dob.dob.normalize();
         form.insert("cdob", dob_normalized.0.as_str());

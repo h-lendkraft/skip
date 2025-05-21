@@ -36,9 +36,21 @@ pub struct SpeedUser {
 pub struct SpeedSearch {
     pub page: &'static str,
     pub form: &'static str,
+    pub mobile: Option<&'static str>,
+    pub namedob: Option<&'static str>,
 }
 impl SpeedSearch {
-    pub fn new(page: &'static str, form: &'static str) -> Self {
-        Self { page, form }
+    pub fn new(
+        page: &'static str,
+        form: &'static str,
+        mobile: Option<&'static str>,
+        namedob: Option<&'static str>,
+    ) -> Self {
+        Self {
+            page,
+            form,
+            mobile,
+            namedob,
+        }
     }
 }
